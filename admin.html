@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Tutor Center Admin</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+display:flex;
+background:#f4f6f9;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+
+width:220px;
+height:100vh;
+background:#2c3e50;
+color:white;
+padding:20px;
+
+}
+
+.sidebar h2{
+margin-bottom:30px;
+text-align:center;
+}
+
+.sidebar button{
+
+width:100%;
+margin-bottom:10px;
+padding:10px;
+border:none;
+background:#34495e;
+color:white;
+cursor:pointer;
+
+}
+
+.sidebar button:hover{
+
+background:#1abc9c;
+
+}
+
+/* MAIN */
+
+.main{
+
+flex:1;
+padding:30px;
+
+}
+
+.page{
+
+display:none;
+
+}
+
+.page.active{
+
+display:block;
+
+}
+
+/* CARD */
+
+.card{
+
+background:white;
+padding:20px;
+border-radius:8px;
+margin-bottom:20px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+
+}
+
+input{
+
+width:100%;
+padding:10px;
+margin:8px 0;
+border:1px solid #ccc;
+border-radius:5px;
+
+}
+
+button.action{
+
+background:#3498db;
+color:white;
+border:none;
+padding:10px;
+cursor:pointer;
+
+}
+
+button.action:hover{
+
+background:#2980b9;
+
+}
+
+/* TABLE */
+
+table{
+
+width:100%;
+border-collapse:collapse;
+
+}
+
+th{
+
+background:#34495e;
+color:white;
+padding:10px;
+
+}
+
+td{
+
+border:1px solid #ddd;
+padding:8px;
+text-align:center;
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<h2>🎓 Tutor Admin</h2>
+
+<button onclick="showPage('dashboard')">Dashboard</button>
+
+<button onclick="showPage('students')">Students</button>
+
+<button onclick="showPage('tutors')">Tutors</button>
+
+<button onclick="showPage('subjects')">Subjects</button>
+
+<button onclick="showPage('matching')">Tutor Matching</button>
+
+<button onclick="showPage('classes')">Assign Class</button>
+
+<button onclick="showPage('payments')">Commission</button>
+
+</div>
+
+<!-- MAIN -->
+
+<div class="main">
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="page active">
+
+<div class="card">
+
+<h2>System Overview</h2>
+
+<p>Quản lý hệ thống trung tâm gia sư</p>
+
+</div>
+
+</div>
+
+<!-- STUDENTS -->
+
+<div id="students" class="page">
+
+<div class="card">
+
+<h2>Thêm Student</h2>
+
+<input id="student_name" placeholder="Student name">
+
+<button class="action" onclick="createStudent()">Create</button>
+
+</div>
+
+</div>
+
+<!-- TUTORS -->
+
+<div id="tutors" class="page">
+
+<div class="card">
+
+<h2>Thêm Tutor</h2>
+
+<input id="tutor_name" placeholder="Tutor name">
+
+<button class="action" onclick="createTutor()">Create</button>
+
+</div>
+
+</div>
+
+<!-- SUBJECTS -->
+
+<div id="subjects" class="page">
+
+<div class="card">
+
+<h2>Thêm Subject</h2>
+
+<input id="subject_name" placeholder="Subject name">
+
+<button class="action" onclick="createSubject()">Create</button>
+
+</div>
+
+</div>
+
+<!-- MATCHING -->
+
+<div id="matching" class="page">
+
+<div class="card">
+
+<h2>Tutor Matching</h2>
+
+<button class="action" onclick="loadMatch()">Load Match</button>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Request</th>
+<th>Student</th>
+<th>Subject</th>
+<th>Tutor</th>
+
+</tr>
+
+</thead>
+
+<tbody id="match_table"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- CLASS -->
+
+<div id="classes" class="page">
+
+<div class="card">
+
+<h2>Assign Tutor to Class</h2>
+
+<input id="request_id" placeholder="Request ID">
+
+<input id="tutor_id" placeholder="Tutor ID">
+
+<button class="action" onclick="assignTutor()">Assign</button>
+
+</div>
+
+</div>
+
+<!-- PAYMENT -->
+
+<div id="payments" class="page">
+
+<div class="card">
+
+<h2>Commission Payment</h2>
+
+<input id="class_id" placeholder="Class ID">
+
+<input id="amount" placeholder="Commission amount">
+
+<button class="action" onclick="createPayment()">Submit</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const API="http://localhost:3000/api"
+
+function showPage(page){
+
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+
+document.getElementById(page).classList.add("active")
+
+}
+
+/* STUDENT */
+
+function createStudent(){
+
+fetch(API+"/students",{
+
+method:"POST",
+
+headers:{"Content-Type":"application/json"},
+
+body:JSON.stringify({
+
+name:document.getElementById("student_name").value
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(()=>alert("Student created"))
+
+}
+
+/* TUTOR */
+
+function createTutor(){
+
+fetch(API+"/tutors",{
+
+method:"POST",
+
+headers:{"Content-Type":"application/json"},
+
+body:JSON.stringify({
+
+name:document.getElementById("tutor_name").value
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(()=>alert("Tutor created"))
+
+}
+
+/* SUBJECT */
+
+function createSubject(){
+
+fetch(API+"/subjects",{
+
+method:"POST",
+
+headers:{"Content-Type":"application/json"},
+
+body:JSON.stringify({
+
+name:document.getElementById("subject_name").value
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(()=>alert("Subject created"))
+
+}
+
+/* MATCH */
+
+function loadMatch(){
+
+fetch(API+"/find_tutor_match")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+let html=""
+
+data.forEach(row=>{
+
+html+=`
+<tr>
+<td>${row.request_id}</td>
+<td>${row.student_name}</td>
+<td>${row.subject_name}</td>
+<td>${row.tutor_name}</td>
+</tr>
+`
+
+})
+
+document.getElementById("match_table").innerHTML=html
+
+})
+
+}
+
+/* ASSIGN CLASS */
+
+function assignTutor(){
+
+fetch(API+"/assign_class",{
+
+method:"POST",
+
+headers:{"Content-Type":"application/json"},
+
+body:JSON.stringify({
+
+request_id:document.getElementById("request_id").value,
+tutor_id:document.getElementById("tutor_id").value
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(()=>alert("Tutor Assigned"))
+
+}
+
+/* PAYMENT */
+
+function createPayment(){
+
+fetch(API+"/commission",{
+
+method:"POST",
+
+headers:{"Content-Type":"application/json"},
+
+body:JSON.stringify({
+
+class_id:document.getElementById("class_id").value,
+amount:document.getElementById("amount").value
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(()=>alert("Payment saved"))
+
+}
+
+</script>
+
+</body>
+</html>
